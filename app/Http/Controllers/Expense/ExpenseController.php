@@ -9,21 +9,15 @@ use App\Http\Requests\Expense\StoreRequest;
 use App\Http\Requests\Expense\UpdateRequest;
 use App\Http\Resources\Expense\ExpenseCollection;
 use App\Http\Resources\Expense\ExpenseResource;
-use App\Services\ExpenseService;
+use App\Models\Expense;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Auth;
 
 class ExpenseController extends Controller
 {
-    protected ExpenseService $service;
-
-    public function __construct(ExpenseService $service)
-    {
-        $this->service = $service;
-    }
-
     /**
      * @param Request $request
      *
@@ -31,7 +25,7 @@ class ExpenseController extends Controller
      */
     public function index(Request $request): ResourceCollection
     {
-        $expenses = $this->service->getAll();
+        $expenses = Auth::user()->expenses;
 
         return new ExpenseCollection($expenses);
     }
@@ -43,14 +37,16 @@ class ExpenseController extends Controller
      */
     public function store(StoreRequest $request): JsonResource
     {
-        $expense = $this->service->create(
-            $request->only([
-                'description',
-                'occurred_date',
-                'currency',
-                'value',
-            ])
-        );
+        $data = $request->only([
+            'description',
+            'occurred_date',
+            'currency',
+            'value',
+        ]);
+
+        $data['user_id'] = Auth::user()->id;
+
+        $expense = Expense::query()->create($data);
 
         return new ExpenseResource($expense);
     }
@@ -61,9 +57,9 @@ class ExpenseController extends Controller
      *
      * @return JsonResource
      */
-    public function show(ShowRequest $request, int $id): JsonResource
+    public function show(ShowRequest $request, Expense $expense): JsonResource
     {
-        $expense = $this->service->get($id);
+        $this->authorize('view', $expense);
 
         return new ExpenseResource($expense);
     }
@@ -74,17 +70,20 @@ class ExpenseController extends Controller
      *
      * @return JsonResource
      */
-    public function update(UpdateRequest $request, int $id): JsonResource
+    public function update(UpdateRequest $request, Expense $expense): JsonResource
     {
-        $expense = $this->service->update(
+        $this->authorize('update', $expense);
+
+        $expense->fill(
             $request->only([
                 'description',
                 'occurred_date',
                 'currency',
                 'value',
-            ]),
-            $id
+            ])
         );
+
+        $expense->save();
 
         return new ExpenseResource($expense);
     }
@@ -95,9 +94,11 @@ class ExpenseController extends Controller
      *
      * @return JsonResponse
      */
-    public function destroy(DestroyRequest $request, int $id): JsonResponse
+    public function destroy(DestroyRequest $request, Expense $expense): JsonResponse
     {
-        $this->service->delete($id);
+        $this->authorize('delete', $expense);
+
+        $expense->delete();
 
         return response()->json();
     }

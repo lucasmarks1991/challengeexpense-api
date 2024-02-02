@@ -32,9 +32,9 @@ Route::group(['prefix' => 'v1'], function() {
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('/', [ExpenseController::class, 'index']);
             Route::post('/', [ExpenseController::class, 'store']);
-            Route::get('/{id}', [ExpenseController::class, 'show']);
-            Route::patch('/{id}', [ExpenseController::class, 'update']);
-            Route::delete('/{id}', [ExpenseController::class, 'destroy']);
+            Route::get('/{expense}', [ExpenseController::class, 'show']);
+            Route::patch('/{expense}', [ExpenseController::class, 'update']);
+            Route::delete('/{expense}', [ExpenseController::class, 'destroy']);
         });
     });
 });
