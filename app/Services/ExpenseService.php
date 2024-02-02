@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Expense;
+use App\Notifications\Expense\ExpenseCreated;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
@@ -30,6 +31,8 @@ class ExpenseService extends Service
         $expense->user_id = Auth::user()->id;
 
         $expense->save();
+
+        Auth::user()->notify(new ExpenseCreated($expense));
 
         return $expense;
     }

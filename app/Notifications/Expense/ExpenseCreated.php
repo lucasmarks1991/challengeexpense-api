@@ -3,10 +3,11 @@
 namespace App\Notifications\Expense;
 
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class ExpenseCreated extends Notification
+class ExpenseCreated extends Notification implements ShouldQueue
 {
     use Queueable;
 
@@ -34,9 +35,9 @@ class ExpenseCreated extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-                    ->line('The introduction to the notification.')
-                    ->action('Notification Action', url('/'))
-                    ->line('Thank you for using our application!');
+            ->subject("Despesa cadastrada")
+            ->line('Olá ' . $notifiable->name . '!')
+            ->line('Uma despesa foi cadastrada para seu usuário.');
     }
 
     /**
