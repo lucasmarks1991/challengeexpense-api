@@ -28,13 +28,5 @@ Route::group(['prefix' => 'v1'], function() {
         });
     });
 
-    Route::group(['prefix' => 'expenses'], function() {
-        Route::middleware('auth:sanctum')->group(function () {
-            Route::get('/', [ExpenseController::class, 'index']);
-            Route::post('/', [ExpenseController::class, 'store']);
-            Route::get('/{expense}', [ExpenseController::class, 'show']);
-            Route::patch('/{expense}', [ExpenseController::class, 'update']);
-            Route::delete('/{expense}', [ExpenseController::class, 'destroy']);
-        });
-    });
+    Route::apiResource('/expenses', ExpenseController::class)->middleware('auth:sanctum');
 });
