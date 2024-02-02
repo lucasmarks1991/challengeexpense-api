@@ -24,6 +24,11 @@ class ExpenseController extends Controller
         $this->service = $service;
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return ResourceCollection
+     */
     public function index(Request $request): ResourceCollection
     {
         $expenses = $this->service->getAll();
@@ -31,6 +36,11 @@ class ExpenseController extends Controller
         return new ExpenseCollection($expenses);
     }
 
+    /**
+     * @param StoreRequest $request
+     *
+     * @return JsonResource
+     */
     public function store(StoreRequest $request): JsonResource
     {
         $expense = $this->service->create(
@@ -45,6 +55,12 @@ class ExpenseController extends Controller
         return new ExpenseResource($expense);
     }
 
+    /**
+     * @param ShowRequest $request
+     * @param int $id
+     *
+     * @return JsonResource
+     */
     public function show(ShowRequest $request, int $id): JsonResource
     {
         $expense = $this->service->get($id);
@@ -52,6 +68,12 @@ class ExpenseController extends Controller
         return new ExpenseResource($expense);
     }
 
+    /**
+     * @param UpdateRequest $request
+     * @param int $id
+     *
+     * @return JsonResource
+     */
     public function update(UpdateRequest $request, int $id): JsonResource
     {
         $expense = $this->service->update(
@@ -67,6 +89,12 @@ class ExpenseController extends Controller
         return new ExpenseResource($expense);
     }
 
+    /**
+     * @param DestroyRequest $request
+     * @param int $id
+     *
+     * @return JsonResponse
+     */
     public function destroy(DestroyRequest $request, int $id): JsonResponse
     {
         $this->service->delete($id);
