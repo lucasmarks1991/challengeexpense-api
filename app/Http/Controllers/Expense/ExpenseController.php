@@ -44,9 +44,12 @@ class ExpenseController extends Controller
             'value',
         ]);
 
-        $data['user_id'] = Auth::user()->id;
+        $expense = new Expense();
 
-        $expense = Expense::query()->create($data);
+        $expense->fill($data);
+        $expense->user_id = Auth::user()->id;
+
+        $expense->save();
 
         return new ExpenseResource($expense);
     }
