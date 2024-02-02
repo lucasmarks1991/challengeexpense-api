@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Expense\ExpenseController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,16 @@ Route::group(['prefix' => 'v1'], function() {
     Route::group(['prefix' => 'users'], function() {
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('/me', [UserController::class, 'getLoggedUser']);
+        });
+    });
+
+    Route::group(['prefix' => 'expenses'], function() {
+        Route::middleware('auth:sanctum')->group(function () {
+            Route::get('/', [ExpenseController::class, 'index']);
+            Route::post('/', [ExpenseController::class, 'store']);
+            Route::get('/{id}', [ExpenseController::class, 'show']);
+            Route::patch('/{id}', [ExpenseController::class, 'update']);
+            Route::delete('/{id}', [ExpenseController::class, 'destroy']);
         });
     });
 });
